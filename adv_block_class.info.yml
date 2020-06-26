@@ -1,0 +1,9 @@
+name: 'Advanced Block Class'
+type: module
+description: 'Alters block configuration form to add lists of preset classes that can be selected as needed.'
+package: Other
+core: 8.x
+core_version_requirement: ^8 || ^9
+dependencies:
+  - drupal:block
+  

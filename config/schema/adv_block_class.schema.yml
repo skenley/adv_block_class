@@ -1,0 +1,10 @@
+adv_block_class.block_style.*:
+  type: config_entity
+  label: 'Block Style config'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: label
+      label: 'Name'

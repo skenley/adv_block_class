@@ -1,0 +1,92 @@
+<?php
+
+/**
+ * @file
+ * Adding preset lists of classes to select for blocks.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\block\Entity\Block;
+use Drupal\Component\Utility\Html;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\block\BlockInterface;
+use Drupal\Core\Url;
+
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ */
+function adv_block_class_block_presave(BlockInterface $entity) {
+  if (empty($entity->getThirdPartySetting('adv_block_class', 'classes'))) {
+    $entity->unsetThirdPartySetting('adv_block_class', 'classes');
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function adv_block_class_form_block_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if (\Drupal::currentUser()->hasPermission('administer block classes')) {
+
+    /** @var \Drupal\block\BlockInterface $block */
+    $block = $form_state->getFormObject()->getEntity();
+
+    // This will automatically be saved in the third party settings.
+    $form['third_party_settings']['#tree'] = TRUE;
+    $form['third_party_settings']['adv_block_class']['presets'] = [
+      '#type' => 'fieldset',
+      '#title' => t('Style Presets'),
+      '#description' => t('Select desired styles below.'),
+    ];
+    $form['third_party_settings']['adv_block_class']['set_one'] = [
+      '#type' => 'checkboxes',
+      '#title' => t('Set One'),
+      '#options' => [
+        'class-one' => t('Class One'),
+        'class-two' => t('Class Two'),
+        'class-three' => t('Class Three'),
+      ],
+      '#default_value' => $block->getThirdPartySetting('adv_block_class', 'set_one'),
+    ];
+    $form['third_party_settings']['adv_block_class']['set_two'] = [
+      '#type' => 'checkboxes',
+      '#title' => t('Set Two'),
+      '#options' => [
+        'class-four' => t('Class Four'),
+        'class-five' => t('Class Five'),
+        'class-six' => t('Class Six'),
+      ],
+      '#default_value' => $block->getThirdPartySetting('adv_block_class', 'set_two'),
+    ];
+    $form['third_party_settings']['adv_block_class']['classes'] = [
+      '#type' => 'textfield',
+      '#title' => t('CSS class(es)'),
+      '#description' => t('Customize the styling of this block by adding CSS classes in addition to the selected classes above. Separate multiple classes by spaces.'),
+      '#default_value' => $block->getThirdPartySetting('adv_block_class', 'classes'),
+      '#maxlength' => 255,
+    ];
+
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function adv_block_class_preprocess_block(&$variables) {
+  // Blocks coming from page manager widget does not have id.
+  if (!empty($variables['elements']['#id'])) {
+    $block = Block::load($variables['elements']['#id']);
+    if ($block && $classes = $block->getThirdPartySetting('adv_block_class', 'classes')) {
+      $classes_array = explode(' ', $classes);
+      foreach ($classes_array as $class) {
+        $variables['attributes']['class'][] = Html::cleanCssIdentifier($class, []);
+      }
+    }
+    if ($block && $presets = $block->getThirdPartySetting('adv_block_class', 'set_one')) {
+      foreach ($presets as $preset) {
+        if ($preset) {
+          $variables['attributes']['class'][] = Html::cleanCssIdentifier($preset, []);
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,5 @@
+entity.block_style.collection:
+  title: 'Advanced Block Class'
+  parent: block.admin_display
+  description: 'Configure Block Styles'
+  route_name: entity.block_style.collection
