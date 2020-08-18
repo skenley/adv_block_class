@@ -1,0 +1,6 @@
+'administer block styles':
+  title: 'Administer Block Styles'
+  description: 'Gives user permission to edit, create, or delete Block Styles.'
+'apply block styles':
+  title: 'Apply Block Styles'
+  description: 'Gives user permission to edit Block Styles on block configuration forms.'

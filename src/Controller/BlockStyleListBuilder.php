@@ -16,6 +16,7 @@ class BlockStyleListBuilder extends ConfigEntityListBuilder {
   public function buildHeader() {
     $header['label'] = $this->t('Block Style');
     $header['id'] = $this->t('Machine name');
+    $header['description'] = $this->t('Description');
     return $header + parent::buildHeader();
   }
   
@@ -25,6 +26,7 @@ class BlockStyleListBuilder extends ConfigEntityListBuilder {
   public function buildRow(EntityInterface $entity) {
     $row['label'] = $entity->label();
     $row['id'] = $entity->id();
+    $row['description'] = $entity->getDescription();
     
     return $row + parent::buildRow($entity);
   }

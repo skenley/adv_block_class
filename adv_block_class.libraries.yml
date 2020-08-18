@@ -1,0 +1,9 @@
+adv-block-class:
+  version: VERSION
+  js:
+    js/adv_block_class.js: {}
+  dependencies:
+    - core/jquery
+  css:
+    theme:
+      css/adv_block_class.css: {}

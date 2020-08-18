@@ -4,6 +4,10 @@ description: 'Alters block configuration form to add lists of preset classes tha
 package: Other
 core: 8.x
 core_version_requirement: ^8 || ^9
+
+libraries:
+  - adv_block_class/adv-block-class
+  
 dependencies:
   - drupal:block
   

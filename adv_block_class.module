@@ -25,38 +25,62 @@ function adv_block_class_block_presave(BlockInterface $entity) {
  * Implements hook_form_FORM_ID_alter().
  */
 function adv_block_class_form_block_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  if (\Drupal::currentUser()->hasPermission('administer block classes')) {
+  // Attach module library to block entities.
+  $formObject = $form_state->getFormObject();
+  if ($formObject instanceof \Drupal\Core\Entity\EntityFormInterface) {
+    $entity = $formObject->getEntity();
+    if ($entity->getEntityTypeId() === 'block') {
+      $form['#attached']['library'][] = 'adv_block_class/adv-block-class';
+    }
+  }
+  
+  if (\Drupal::currentUser()->hasPermission('apply block styles')) {
 
     /** @var \Drupal\block\BlockInterface $block */
     $block = $form_state->getFormObject()->getEntity();
-
+    $storage = \Drupal::entityTypeManager()->getStorage('block_style');
+    $ids = \Drupal::entityQuery('block_style')->execute();
+    $list = $storage->loadMultiple($ids);
+    $classSet = [];
+    $classSetLabel = [];
+    $multiple = [];
+    foreach ($list as $key => $value) {
+      $classSetLabel[$key] = $value->label;
+      $multiple[$key] = $value->multiple;
+      if (strpos($value->classes, '|') !== false) {
+        $pairs = explode("\n", $value->classes);
+        foreach ($pairs as $pair) {
+          $pair = explode('|', $pair);
+          $classSet[$key][trim($pair[0])] = trim($pair[1]);
+        }
+      } else {
+        $classes = explode("\n", $value->classes);
+        foreach ($classes as $class) {
+          $classSet[$key][trim($class)] = trim($class);
+        }
+      }
+    }
     // This will automatically be saved in the third party settings.
     $form['third_party_settings']['#tree'] = TRUE;
-    $form['third_party_settings']['adv_block_class']['presets'] = [
-      '#type' => 'fieldset',
-      '#title' => t('Style Presets'),
-      '#description' => t('Select desired styles below.'),
-    ];
-    $form['third_party_settings']['adv_block_class']['set_one'] = [
-      '#type' => 'checkboxes',
-      '#title' => t('Set One'),
-      '#options' => [
-        'class-one' => t('Class One'),
-        'class-two' => t('Class Two'),
-        'class-three' => t('Class Three'),
-      ],
-      '#default_value' => $block->getThirdPartySetting('adv_block_class', 'set_one'),
-    ];
-    $form['third_party_settings']['adv_block_class']['set_two'] = [
-      '#type' => 'checkboxes',
-      '#title' => t('Set Two'),
-      '#options' => [
-        'class-four' => t('Class Four'),
-        'class-five' => t('Class Five'),
-        'class-six' => t('Class Six'),
-      ],
-      '#default_value' => $block->getThirdPartySetting('adv_block_class', 'set_two'),
-    ];
+    $form['third_party_settings']['#prefix'] = '<div class="advanced-block-class-wrapper"><div class="inner">';
+    $form['third_party_settings']['#suffix'] = '</div></div>';
+    foreach ($classSet as $key => $opt) {
+      if ($multiple[$key]) {
+        $type = 'checkboxes';
+      } else {
+        $type = 'radios';
+      }
+      $form['third_party_settings']['adv_block_class'][$key] = [
+        '#type' => $type,
+        // '#title' => t($classSetLabel[$key]),
+        '#options' => $opt,
+        '#default_value' => $block->getThirdPartySetting('adv_block_class', $key),
+        '#prefix' => '<div class="advanced-block-class ' . $key 
+          . '"><div class="inner"><span class="abc-collapse"><strong>'
+            . $classSetLabel[$key] . '</strong></span>',
+        '#suffix' => '</div></div><!-- .advanced-block-class -->',
+      ];
+    }
     $form['third_party_settings']['adv_block_class']['classes'] = [
       '#type' => 'textfield',
       '#title' => t('CSS class(es)'),
@@ -75,16 +99,24 @@ function adv_block_class_preprocess_block(&$variables) {
   // Blocks coming from page manager widget does not have id.
   if (!empty($variables['elements']['#id'])) {
     $block = Block::load($variables['elements']['#id']);
+    // If there are any custom classes, add them.
     if ($block && $classes = $block->getThirdPartySetting('adv_block_class', 'classes')) {
       $classes_array = explode(' ', $classes);
       foreach ($classes_array as $class) {
         $variables['attributes']['class'][] = Html::cleanCssIdentifier($class, []);
       }
     }
-    if ($block && $presets = $block->getThirdPartySetting('adv_block_class', 'set_one')) {
-      foreach ($presets as $preset) {
-        if ($preset) {
-          $variables['attributes']['class'][] = Html::cleanCssIdentifier($preset, []);
+    // If there are any block styles applied to the block, add the appropriate classes.
+    if ($block && $blockStyles = $block->getThirdPartySettings('adv_block_class')) {
+      foreach ($blockStyles as $blockStyle) {
+        if (is_string($blockStyle)) { // Support for non-mulitple value styles.
+          $variables['attributes']['class'][] = Html::cleanCssIdentifier($blockStyle, []);
+        } else {
+          foreach ($blockStyle as $class) { // Support for multi value styles.
+            if ($class) {
+              $variables['attributes']['class'][] = Html::cleanCssIdentifier($class, []);
+            }
+          }
         }
       }
     }

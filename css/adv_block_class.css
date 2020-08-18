@@ -1,0 +1,29 @@
+.abc-collapse {
+  color: #169CD7;
+}
+
+.abc-collapse:hover {
+  cursor: pointer;
+}
+
+.class-set {
+  border: solid 1px #000;
+}
+
+.advanced-block-class-wrapper > .inner {
+  border:1px solid #ccc;
+  background:#ededed;
+  padding:20px;
+}
+
+.advanced-block-class > .inner {
+  padding:10px;
+  border:1px solid #bbb;
+  background:#dddddd;
+}
+
+.class-set {
+  border:1px solid #aaa;
+  background:#efefef;
+  padding:10px;
+}

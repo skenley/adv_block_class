@@ -12,7 +12,7 @@ interface BlockStyleInterface extends ConfigEntityInterface {
   /**
    * Sets the name of the block style entity.
    */
-  public function setName($name);
+  public function setLabel($label);
   
   /**
    * Sets the block types referenced by the block style entity.
@@ -25,9 +25,14 @@ interface BlockStyleInterface extends ConfigEntityInterface {
   public function setClasses($blockClasses);
   
   /**
+   * Sets the value of the multiple field to allow or disallow multiple class selections.
+   */
+  public function setMultiple($multiple);
+  
+  /**
    * Gets the name of the block style entity.
    */
-  public function getName();
+  public function getLabel();
   
   /**
    * Gets the block types referenced by the block style entity.
@@ -38,6 +43,11 @@ interface BlockStyleInterface extends ConfigEntityInterface {
    * Gets the class names for the block style entity.
    */
   public function getClasses();
+  
+  /**
+   * Gets the value of the multiple field to allow or disallow multiple class selections.
+   */
+  public function getMultiple();
   
 }
 

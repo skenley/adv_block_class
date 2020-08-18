@@ -1,0 +1,31 @@
+entity.block_style.collection:
+  path: '/admin/structure/block/block_style'
+  defaults:
+    _entity_list: 'block_style'
+    _title: 'Block Style configuration'
+  requirements:
+    _permission: 'administer block styles'
+
+entity.block_style.add_form:
+  path: '/admin/structure/block/block_style/add'
+  defaults:
+    _entity_form: 'block_style.add'
+    _title: 'Add Block Style'
+  requirements:
+    _permission: 'administer block styles'
+
+entity.block_style.edit_form:
+  path: '/admin/structure/block/block_style/{block_style}'
+  defaults:
+    _entity_form: 'block_style.edit'
+    _title: 'Edit Block Style'
+  requirements:
+    _permission: 'administer block styles'
+
+entity.block_style.delete_form:
+  path: '/admin/structure/block/block_style/{block_style}/delete'
+  defaults:
+    _entity_form: 'block_style.delete'
+    _title: 'Delete Block Style'
+  requirements:
+    _permission: 'administer block styles'
