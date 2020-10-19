@@ -119,7 +119,7 @@ function adv_block_class_preprocess_block(&$variables) {
             $variables['attributes']['class'][] = Html::cleanCssIdentifier($blockStyle, []);
           }
         } else {
-          foreach ($blockStyle as $class) { // Support for multi value styles.
+          foreach ($blockStyles as $class) { // Support for multi value styles.
             if ($class) {
               $variables['attributes']['class'][] = Html::cleanCssIdentifier($class, []);
             }
