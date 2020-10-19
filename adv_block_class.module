@@ -110,7 +110,14 @@ function adv_block_class_preprocess_block(&$variables) {
     if ($block && $blockStyles = $block->getThirdPartySettings('adv_block_class')) {
       foreach ($blockStyles as $blockStyle) {
         if (is_string($blockStyle)) { // Support for non-mulitple value styles.
-          $variables['attributes']['class'][] = Html::cleanCssIdentifier($blockStyle, []);
+          if (strpos($blockStyle, ' ') !== false) {
+            $classList = explode(" ", $blockStyle);
+            foreach ($classList as $class) {
+              $variables['attributes']['class'][] = Html::cleanCssIdentifier($class, []);
+            } 
+          } else {
+            $variables['attributes']['class'][] = Html::cleanCssIdentifier($blockStyle, []);
+          }
         } else {
           foreach ($blockStyle as $class) { // Support for multi value styles.
             if ($class) {
