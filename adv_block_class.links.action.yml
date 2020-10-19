@@ -1,5 +1,5 @@
 entity.block_style.add_form:
-  route_name: 'entity.block_class.add_form'
+  route_name: 'entity.block_style.add_form'
   title: 'Add block style'
   appears_on:
     - entity.block_style.collection
